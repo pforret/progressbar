@@ -37,25 +37,27 @@ or with `git`
         
 ## Example
 
-    # simplest use: when the approx number of lines output is known
-    # e.g. first do a rsync --dry-tun to check how many files have to be trasferred
-    # and then use this number in the actual operation
-    $cexpected_lines=$(rsync --dry-run <from> <to> | awk 'END {print NR}')
-    $ rsync <from> <to> | progressbar lines "$expected_lines"
-    
-    # or use it with 'auto-estimate'
-    # the first time the script learns the expected # lines/seconds for operation '40-pings-to-google'
-    $ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
-    45 lines / 39 secs …
-    
-    # the following times, it can use this information to show a 0-100% progressbar
-    $ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
-    [0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!] 100% / 39 secs     
-    
-    # can also be used with different progress bar format (here: short)
-    $ ping -c 40 www.google.com | ./progressbar -b short lines 40-pings-to-google
-    [----------] 100% / 39 secs    
-    
+```bash
+# simplest use: when the approx number of lines output is known
+# e.g. first do a rsync --dry-run to check how many files have to be trasferred
+# and then use this number in the actual operation
+$ expected_lines=$(rsync --dry-run <from> <to> | awk 'END {print NR}')
+$ rsync <from> <to> | progressbar lines "$expected_lines"
+
+# or use it with 'auto-estimate'
+# the first time the script learns the expected # lines/seconds for operation '40-pings-to-google'
+$ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
+45 lines / 39 secs …
+
+# the following times, it can use this information to show a 0-100% progressbar
+$ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
+[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!] 100% / 39 secs     
+
+# can also be used with different progress bar format (here: short)
+$ ping -c 40 www.google.com | ./progressbar -b short lines 40-pings-to-google
+[----------] 100% / 39 secs    
+```
+   
     
 ## Acknowledgements
 
