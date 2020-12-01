@@ -28,6 +28,7 @@ param|1|input|input number or process id
 
 main() {
     log "Program: $script_basename $script_version"
+    log "Created: $script_creation"
     log "Updated: $prog_modified"
     log "Run as : $USER@$HOSTNAME"
     # add programs that need to be installed, like: tar, wget, ffmpeg, rsync, convert, curl ...
@@ -541,10 +542,10 @@ lookup_script_data(){
   readonly script_prefix=$(basename "${BASH_SOURCE[0]}" .sh)
   readonly script_basename=$(basename "${BASH_SOURCE[0]}")
   readonly execution_day=$(date "+%Y-%m-%d")
-  readonly execution_year=$(date "+%Y")
 
   # cf https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself
   script_install_path="${BASH_SOURCE[0]}"
+  script_install_folder=$(dirname "$script_install_path")
   while [ -h "$script_install_path" ]; do
     # resolve symbolic links
     script_install_folder="$( cd -P "$( dirname "$script_install_path" )" >/dev/null 2>&1 && pwd )"
@@ -561,11 +562,6 @@ lookup_script_data(){
   # $script_prefix          = [<script>]
 
   [[ -f "$script_install_folder/VERSION.md" ]] && script_version=$(cat "$script_install_folder/VERSION.md")
-  if git status >/dev/null; then
-    readonly in_git_repo=1
-  else
-    readonly in_git_repo=0
-  fi
 }
 
 prep_log_and_temp_dir(){
@@ -593,11 +589,6 @@ import_env_if_any(){
     log "Read config from [$script_install_folder/.env]"
     # shellcheck disable=SC1090
     source "$script_install_folder/.env"
-  fi
-  if [[ -f "./.env" ]] ; then
-    log "Read config from [./.env]"
-    # shellcheck disable=SC1090
-    source "./.env"
   fi
 }
 
