@@ -6,11 +6,8 @@ on:
     branches: [ master ]
 
 jobs:
-  run:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
+  ubuntu:
+    runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
 
     steps:
@@ -18,3 +15,16 @@ jobs:
 
     - name: Unit testing with bash_unit
       run: tests/bash_unit tests/test_*
+
+  macos:
+    runs-on: macos-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install gawk
+        run: brew install gawk
+
+      - name: Unit testing with bash_unit
+        run: tests/bash_unit tests/test_*

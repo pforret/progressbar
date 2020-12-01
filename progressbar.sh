@@ -268,8 +268,7 @@ else
   char_succ="OK " ; char_fail="!! " ; char_alrt="?? " ; char_wait="..."
 fi
 
-readonly nbcols=$(tput cols || echo 80)
-#readonly nbrows=$(tput lines)
+readonly nbcols=$(tput cols 2>/dev/null || echo 80)
 readonly wprogress=$((nbcols - 5))
 
 out() { ((quiet)) || printf '%b\n' "$*";  }
@@ -284,8 +283,8 @@ progress() {
   )
 }
 
-die()     { tput bel; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
-fail()    { tput bel; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
+die()     { tput bel 2>/dev/null ; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
+fail()    { tput bel 2>/dev/null ; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
 alert()   { out "${col_red}${char_alrt}${col_reset}: $*" >&2 ; }                       # print error and continue
 success() { out "${col_grn}${char_succ}${col_reset}  $*" ; }
 announce(){ out "${col_grn}${char_wait}${col_reset}  $*"; sleep 1 ; }
