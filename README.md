@@ -23,7 +23,7 @@ or with `git`
 
     Program: progressbar 1.0.0 by peter@forret.com
     Updated: Dec  1 14:39:22 2020
-    Usage: progressbar [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] [-i <infile>] [-o <outfile>] [-b <barformat>] <action> <input>
+    Usage: progressbar [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] [-b <bar>] <action> <input>
     Flags, options and parameters:
         -h|--help      : [flag] show usage [default: off]
         -q|--quiet     : [flag] no output [default: off]
@@ -31,30 +31,36 @@ or with `git`
         -f|--force     : [flag] do not ask for confirmation (always yes) [default: off]
         -l|--log_dir <val>: [optn] folder for log files   [default: log]
         -t|--tmp_dir <val>: [optn] folder for temp files  [default: /tmp/progressbar]
-        -b|--barformat <val>: [optn] format of bar: normal/half/long/short  [default: normal]
+        -b|--bar <val>: [optn] format of bar: normal/half/long/short  [default: normal]
         <action>  : [parameter] lines/seconds
-        <input>   : [parameter] input number or operation identifier
-        
-## Example
+        <input>   : [parameter] input number or operation identifier       
+            
+## Examples
 
+### Simple use: # lines or seconds is known
 ```bash
-# simplest use: when the approx number of lines output is known
+# when the approx number of lines output is known
 # e.g. first do a rsync --dry-run to check how many files have to be trasferred
 # and then use this number in the actual operation
 $ expected_lines=$(rsync --dry-run <from> <to> | awk 'END {print NR}')
 $ rsync <from> <to> | progressbar lines "$expected_lines"
 
-# or use it with 'auto-estimate'
+# similarly: when the approx number of seconds is known
+$ <do_something_for_1_hour> | progressbar seconds 3600
+```
+
+### Auto-estimate lines/seconds
+```bash
 # the first time the script learns the expected # lines/seconds for operation '40-pings-to-google'
-$ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
+$ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
 45 lines / 39 secs …
 
 # the following times, it can use this information to show a 0-100% progressbar
-$ ping -c 40 www.google.com | ./progressbar lines 40-pings-to-google
+$ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
 [0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!] 100% / 39 secs     
 
 # can also be used with different progress bar format (here: short)
-$ ping -c 40 www.google.com | ./progressbar -b short lines 40-pings-to-google
+$ ping -c 40 www.google.com | progressbar -b short lines 40-pings-to-google
 [----------] 100% / 39 secs    
 ```
    

@@ -18,7 +18,7 @@ option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
 #option|o|outfile|file with generated data (to calculate MB/s)|
 option|b|bar|format of bar: normal/half/long/short|normal
 param|1|action|lines/seconds
-param|1|input|input number or process id
+param|1|input|input number or operation identifier
 " | grep -v '^#'
 }
 
