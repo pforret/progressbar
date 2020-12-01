@@ -7,10 +7,10 @@
 ### 4. add binaries your script needs (e.g. ffmpeg, jq) to require_binaries
 ### ==============================================================================
 
-### Created by author_name ( author_username ) on meta_thisday
+### Created by Peter Forret ( pforret ) on 2020-12-01
 script_version="0.0.0"  # if there is a VERSION.md in this script's folder, it will take priority for version number
-readonly script_author="author@email.com"
-readonly script_creation="meta_thisday"
+readonly script_author="peter@forret.com"
+readonly script_creation="2020-12-01"
 readonly run_as_root=-1 # run_as_root: 0 = don't check anything / 1 = script MUST run as root / -1 = script MAY NOT run as root
 
 list_options() {
@@ -446,34 +446,22 @@ lookup_script_data(){
   readonly execution_day=$(date "+%Y-%m-%d")
   readonly execution_year=$(date "+%Y")
 
-   if [[ -z $(dirname "${BASH_SOURCE[0]}") ]]; then
-    # script called without path ; must be in $PATH somewhere
-    # shellcheck disable=SC2230
-    script_install_path=$(which "${BASH_SOURCE[0]}")
-    if [[ -n $(readlink "$script_install_path") ]] ; then
-      # when script was installed with e.g. basher
-      script_install_path=$(readlink "$script_install_path")
-    fi
-    script_install_folder=$(dirname "$script_install_path")
-  else
-    # script called with relative/absolute path
-    script_install_folder=$(dirname "${BASH_SOURCE[0]}")
-    # resolve to absolute path
-    script_install_folder=$(cd "$script_install_folder" && pwd)
-    if [[ -n "$script_install_folder" ]] ; then
-      script_install_path="$script_install_folder/$script_basename"
-    else
-      script_install_path="${BASH_SOURCE[0]}"
-      script_install_folder=$(dirname "${BASH_SOURCE[0]}")
-    fi
-    if [[ -n $(readlink "$script_install_path") ]] ; then
-      # when script was installed with e.g. basher
-      script_install_path=$(readlink "$script_install_path")
-      script_install_folder=$(dirname "$script_install_path")
-    fi
-  fi
-  log "Executable: [$script_install_path]"
+  # cf https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself
+  script_install_path="${BASH_SOURCE[0]}"
+  while [ -h "$script_install_path" ]; do
+    # resolve symbolic links
+    script_install_folder="$( cd -P "$( dirname "$script_install_path" )" >/dev/null 2>&1 && pwd )"
+    script_install_path="$(readlink "$script_install_path")"
+    [[ "$script_install_path" != /* ]] && script_install_path="$script_install_folder/$script_install_path"
+  done
+
+  log "Executing : [$script_install_path]"
   log "In folder : [$script_install_folder]"
+
+  # $script_install_folder  = [/Users/<username>/.basher/cellar/packages/pforret/<script>]
+  # $script_install_path    = [/Users/<username>/.basher/cellar/packages/pforret/bashew/<script>]
+  # $script_basename        = [<script>.sh]
+  # $script_prefix          = [<script>]
 
   [[ -f "$script_install_folder/VERSION.md" ]] && script_version=$(cat "$script_install_folder/VERSION.md")
   if git status >/dev/null; then
