@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-### ==============================================================================
-### SO HOW DO YOU PROCEED WITH YOUR SCRIPT?
-### 1. define the options/parameters and defaults you need in list_options()
-### 2. implement the different actions in main() with helper functions
-### 3. implement helper functions you defined in previous step
-### 4. add binaries your script needs (e.g. ffmpeg, jq) to require_binaries
-### ==============================================================================
-
 ### Created by Peter Forret ( pforret ) on 2020-12-01
 script_version="0.0.0"  # if there is a VERSION.md in this script's folder, it will take priority for version number
 readonly script_author="peter@forret.com"
@@ -14,18 +6,6 @@ readonly script_creation="2020-12-01"
 readonly run_as_root=-1 # run_as_root: 0 = don't check anything / 1 = script MUST run as root / -1 = script MAY NOT run as root
 
 list_options() {
-  ### Change the next lines to reflect which flags/options/parameters you need
-  ### flag:   switch a flag 'on' / no extra parameter
-  ###     flag|<short>|<long>|<description>
-  ###     e.g. "-v" or "--verbose" for verbose output / default is always 'off'
-  ### option: set an option value / 1 extra parameter
-  ###     option|<short>|<long>|<description>|<default>
-  ###     e.g. "-e <extension>" or "--extension <extension>" for a file extension
-  ### param:  comes after the options
-  ###     param|<type>|<long>|<description>
-  ###     <type> = 1 for single parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = ? for optional parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = n for list parameter    - e.g. param|n|inputs expects <input1> <input2> ... <input99>
 echo -n "
 #commented lines will be filtered
 flag|h|help|show usage
@@ -33,10 +13,12 @@ flag|q|quiet|no output
 flag|v|verbose|output more
 flag|f|force|do not ask for confirmation (always yes)
 option|l|log_dir|folder for log files |log
-option|t|tmp_dir|folder for temp files|.tmp
-param|1|action|action to perform: action1/action2/...
-param|?|input|input file
-param|?|output|output file
+option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
+option|i|infile|file with source data (to calculate MB/s)|
+option|o|outfile|file with generated data (to calculate MB/s)|
+option|b|barformat|format of bar: normal/half/long/short|normal
+param|1|action|lines/seconds
+param|1|input|input number or process id
 " | grep -v '^#'
 }
 
@@ -49,17 +31,25 @@ main() {
     log "Updated: $prog_modified"
     log "Run as : $USER@$HOSTNAME"
     # add programs that need to be installed, like: tar, wget, ffmpeg, rsync, convert, curl ...
-    require_binaries tput uname
+    require_binaries tput uname gawk
 
     action=$(lower_case "$action")
     case $action in
-    action1 )
+    lines )
+#TIP: use «progressbar lines <nb_lines>» to show the progress bar when you can estimate the number of lines that will be sent to stdin
+#TIP:> progressbar lines 14550
+#TIP: use «progressbar lines <process_identifier>» to show the progress bar based on the number of lines it generated before
+#TIP:> progressbar lines export-of-all-dbs
         # shellcheck disable=SC2154
-        perform_action1 "$input" "$output"
+        progress_lines "$input"
         ;;
 
-    action2 )
-        perform_action2 "$input" "$output"
+    seconds )
+#TIP: use «progressbar seconds <nb_secs>» to show the progress bar when you can estimate the number of seconds it will typically take
+#TIP:> if ! confirm "Delete file"; then ; echo "skip deletion" ;   fi
+#TIP: use «progressbar seconds <process_identifier>» to show the progress bar based on the number of seconds it took before
+#TIP:> progressbar seconds export-of-all-dbs
+        progress_seconds "$input"
         ;;
 
     *)
@@ -71,17 +61,158 @@ main() {
 ## Put your helper scripts here
 #####################################################################
 
-perform_action1(){
-  echo "ACTION 1"
-  # < "$1"  do_stuff > "$2"
+bar_format(){
+  # shellcheck disable=SC2154
+  case $barformat in
+  50|half)   echo "0----1----2----3----4----5----6----7----8----9----!" ;;
+  10|short)   echo "----------" ;;
+  20|medium)   echo "--------------------" ;;
+  200|double) echo "0-------------------1-------------------2-------------------3-------------------4-------------------5-------------------6------------------7-------------------8-------------------9-------------------!" ;;
+  *) echo "0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!"
+  esac
 }
 
-perform_action2(){
-  echo "ACTION 2"
-  # < "$1"  do_other_stuff > "$2"
+progress_lines(){
+  if is_number "$1" ; then
+    # $1 is # lines input expected
+    showbar_lines "$1"
+  else
+    # $1 is process identifier
+    # shellcheck disable=SC2154
+    cache_file="$tmp_dir/$(echo "$1" | hash 12).result.txt"
+    log "Cached: $cache_file"
+    if [[ ! -f "$cache_file" ]] ; then
+      # first time this runs, no idea about # lines
+      showbar_unknown "$cache_file"
+    else
+      # take # lines of previous time
+      lines=$(grep 'lines:' "$cache_file" | cut -d: -f2)
+      log "Found: $lines lines"
+      [[ -z "$lines" ]] && lines=100
+      showbar_lines "$lines" "$cache_file"
+    fi
+  fi
 }
 
+progress_seconds(){
+  if is_number "$1" ; then
+    # $1 is # lines input expected
+    showbar_seconds "$1"
+  else
+    # $1 is process identifier
+    cache_file="$tmp_dir/$(echo "$1" | hash 12).result.txt"
+    log "Cached: $cache_file"
+    if [[ ! -f "$cache_file" ]] ; then
+      # first time this runs, no idea about # seconds
+      showbar_unknown "$cache_file"
+    else
+      # take # seconds of previous time
+      lines=$(grep 'seconds:' "$cache_file" | cut -d: -f2)
+      log "Found: $lines seconds"
+      [[ -z "$lines" ]] && lines=100
+      showbar_seconds "$lines" "$cache_file"
+    fi
+  fi
+}
 
+showbar_lines(){
+  lines="$1"
+  cache=${2:-}
+  update_every=$(( lines / 250))
+  [[ $update_every -lt 1 ]] && update_every=1
+  [[ $update_every -gt 1000 ]] && update_every=1000
+  log "showbar lines: expect $lines lines"
+  log "showbar lines: every $update_every lines"
+  gawk \
+    -v full100="$(bar_format)" \
+    -v cache="$cache" \
+    -v expected_lines="$lines" \
+    -v update_every="$update_every" '
+  BEGIN {
+    len100=length(full100);
+    started_at=systime();
+  }
+  (NR % update_every) == 0 {
+    percent=100*NR/expected_lines;
+    width=len100*NR/expected_lines;
+    if(width>len100){width=len100};
+    if(width<1){width=1};
+    seconds=systime()-started_at;
+    partial=substr(full100,1,width);
+    printf("\r[%s] %d%% / %d secs … " , partial , percent, seconds);
+    fflush();
+  }
+  END {
+    if(percent > 99){
+      printf("\r[%s] %d%% / %d secs      " , full100 , 100, seconds);
+    }
+    printf("\n");
+    if(length(cache)>3){
+      print "lines:" , NR > cache
+      print "seconds:" , systime()-started_at >> cache
+    }
+  }
+  '
+}
+
+showbar_seconds(){
+  seconds="$1"
+  cache=${2:-}
+  seq 1 "$seconds" \
+  | gawk '{print ; system("sleep 1");}' \
+  | gawk \
+    -v full100="$(bar_format)" \
+    -v cache="$cache" \
+    -v expected_lines="$seconds" '
+  BEGIN {
+    len100=length(full100);
+    started_at=systime();
+  }
+  {
+    percent=100*NR/expected_lines;
+    width=len100*NR/expected_lines;
+    if(width>len100){width=len100};
+    if(width<1){width=1};
+    seconds=systime()-started_at;
+    partial=substr(full100,1,width);
+    printf("\r[%s] %d%% / %d secs … " , partial , percent, seconds);
+    fflush();
+  }
+  END {
+    if(percent > 99){
+      printf("\r[%s] %d%% / %d secs      " , full100 , 100, seconds);
+    }
+    printf("\n");
+    if(length(cache)>3){
+      print "lines:" , NR > cache
+      print "seconds:" , systime()-started_at >> cache
+    }
+  }
+  '
+}
+
+showbar_unknown(){
+  cache=${1:-}
+  gawk \
+    -v cache="$cache" '
+  BEGIN {
+    len100=length(full100);
+    started_at=systime();
+  }
+  {
+    seconds=systime()-started_at;
+    printf("\r%d lines / %d secs … " , NR, seconds);
+    fflush();
+  }
+  END {
+    printf("\n");
+    if(length(cache)>3){
+      print "lines:" , NR > cache
+      print "seconds:" , systime()-started_at >> cache
+    }
+  }
+  '
+}
 #####################################################################
 ################### DO NOT MODIFY BELOW THIS LINE ###################
 
@@ -101,9 +232,6 @@ hash(){
     md5 | cut -c1-"$length"
   fi
 }
-#TIP: use «hash» to create short unique values of fixed length based on longer inputs
-#TIP:> url_contents="$domain.$(echo $url | hash 8).html"
-
 
 prog_modified="??"
 os_name=$(uname -s)
@@ -143,8 +271,6 @@ readonly nbcols=$(tput cols || echo 80)
 readonly wprogress=$((nbcols - 5))
 
 out() { ((quiet)) || printf '%b\n' "$*";  }
-#TIP: use «out» to show any kind of output, except when option --quiet is specified
-#TIP:> out "User is [$USER]"
 
 progress() {
   ((quiet)) || (
@@ -155,39 +281,16 @@ progress() {
     fi
   )
 }
-#TIP: use «progress» to show one line of progress that will be overwritten by the next output
-#TIP:> progress "Now generating file $nb of $total ..."
 
 die()     { tput bel; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
 fail()    { tput bel; out "${col_red}${char_fail} $script_basename${col_reset}: $*" >&2; safe_exit; }
-#TIP: use «die» to show error message and exit program
-#TIP:> if [[ ! -f $output ]] ; then ; die "could not create output" ; fi
-
 alert()   { out "${col_red}${char_alrt}${col_reset}: $*" >&2 ; }                       # print error and continue
-#TIP: use «alert» to show alert/warning message but continue
-#TIP:> if [[ ! -f $output ]] ; then ; alert "could not create output" ; fi
-
 success() { out "${col_grn}${char_succ}${col_reset}  $*" ; }
-#TIP: use «success» to show success message but continue
-#TIP:> if [[ -f $output ]] ; then ; success "output was created!" ; fi
-
 announce(){ out "${col_grn}${char_wait}${col_reset}  $*"; sleep 1 ; }
-#TIP: use «announce» to show the start of a task
-#TIP:> announce "now generating the reports"
-
 log()   { ((verbose)) && out "${col_ylw}# $* ${col_reset}" >&2 ; }
-#TIP: use «log» to show information that will only be visible when -v is specified
-#TIP:> log "input file: [$inputname] - [$inputsize] MB"
-
 lower_case()   { echo "$*" | awk '{print tolower($0)}' ; }
 upper_case()   { echo "$*" | awk '{print toupper($0)}' ; }
-#TIP: use «lower_case» and «upper_case» to convert to upper/lower case
-#TIP:> param=$(lower_case $param)
-
 confirm() { is_set $force && return 0; read -r -p "$1 [y/N] " -n 1; echo " "; [[ $REPLY =~ ^[Yy]$ ]];}
-#TIP: use «confirm» for interactive confirmation before doing something
-#TIP:> if ! confirm "Delete file"; then ; echo "skip deletion" ;   fi
-
 ask() {
   # $1 = variable name
   # $2 = question
@@ -201,8 +304,6 @@ ask() {
     eval "$1=\"$ANSWER\""
   fi
 }
-#TIP: use «ask» for interactive setting of variables
-#TIP:> ask NAME "What is your name" "Peter"
 
 error_prefix="${col_red}>${col_reset}"
 trap "die \"ERROR \$? after \$SECONDS seconds \n\
@@ -221,13 +322,11 @@ safe_exit() {
 is_set()       { [[ "$1" -gt 0 ]]; }
 is_empty()     { [[ -z "$1" ]] ; }
 is_not_empty() { [[ -n "$1" ]] ; }
-#TIP: use «is_empty» and «is_not_empty» to test for variables
-#TIP:> if is_empty "$email" ; then ; echo "Need Email!" ; fi
 
 is_file() { [[ -f "$1" ]] ; }
 is_dir()  { [[ -d "$1" ]] ; }
-#TIP: use «is_file» and «is_dir» to test for files or folders
-#TIP:> if is_file "/etc/hosts" ; then ; cat "/etc/hosts" ; fi
+
+is_number(){ local re='^[0-9]+$'; [[ "$1" =~ $re ]] ; }
 
 show_usage() {
   out "Program: ${col_grn}$script_basename $script_version${col_reset} by ${col_ylw}$script_author${col_reset}"
@@ -314,8 +413,6 @@ folder_prep(){
       fi
   fi
 }
-#TIP: use «folder_prep» to create a folder if needed and otherwise clean up old files
-#TIP:> folder_prep "$log_dir" 7 # delete all files olders than 7 days
 
 expects_single_params(){
   list_options | grep 'param|1|' > /dev/null
@@ -476,15 +573,15 @@ prep_log_and_temp_dir(){
   log_file=""
   # shellcheck disable=SC2154
   if is_not_empty "$tmp_dir" ; then
-    folder_prep "$tmp_dir" 1
+    folder_prep "$tmp_dir" 30
     tmp_file=$(mktemp "$tmp_dir/$execution_day.XXXXXX")
     log "tmp_file: $tmp_file"
-    # you can use this teporary file in your program
-    # it will be deleted automatically if the program ends without problems
+    # you can use this temporary file in your program
+    # it will be deleted automatically if the program ends without errors
   fi
   # shellcheck disable=SC2154
   if [[ -n "$log_dir" ]] ; then
-    folder_prep "$log_dir" 7
+    folder_prep "$log_dir" 30
     log_file=$log_dir/$script_prefix.$execution_day.log
     log "log_file: $log_file"
     echo "$(date '+%H:%M:%S') | [$script_basename] $script_version started" >> "$log_file"
@@ -492,9 +589,6 @@ prep_log_and_temp_dir(){
 }
 
 import_env_if_any(){
-  #TIP: use «.env» file in script folder / current folder to set secrets or common config settings
-  #TIP:> AWS_SECRET_ACCESS_KEY="..."
-
   if [[ -f "$script_install_folder/.env" ]] ; then
     log "Read config from [$script_install_folder/.env]"
     # shellcheck disable=SC1090
