@@ -3,3 +3,5 @@ log/*
 *.tmp
 .env
 .idea
+tests/log
+tests/.tmp
