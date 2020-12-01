@@ -62,6 +62,8 @@ $ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
 
 # the following times, it can use this information to show a 0-100% progressbar
 $ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
+[0---------1---------2---------3---------4---------5] 51% / 21 secs … 
+(...)
 [0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!] 100% / 39 secs     
 
 # can also be used with different progress bar format (here: short)
