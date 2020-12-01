@@ -1,7 +1,7 @@
-log/*
-.tmp/*
 *.tmp
 .env
 .idea
-tests/log
+.tmp/*
+log/*
 tests/.tmp
+tests/log/*

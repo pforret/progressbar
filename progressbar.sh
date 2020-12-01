@@ -14,9 +14,9 @@ flag|v|verbose|output more
 flag|f|force|do not ask for confirmation (always yes)
 option|l|log_dir|folder for log files |log
 option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
-option|i|infile|file with source data (to calculate MB/s)|
-option|o|outfile|file with generated data (to calculate MB/s)|
-option|b|barformat|format of bar: normal/half/long/short|normal
+#option|i|infile|file with source data (to calculate MB/s)|
+#option|o|outfile|file with generated data (to calculate MB/s)|
+option|b|bar|format of bar: normal/half/long/short|normal
 param|1|action|lines/seconds
 param|1|input|input number or process id
 " | grep -v '^#'
@@ -64,7 +64,8 @@ main() {
 
 bar_format(){
   # shellcheck disable=SC2154
-  case $barformat in
+  case $bar in
+  none)   echo "" ;;
   50|half)   echo "0----1----2----3----4----5----6----7----8----9----!" ;;
   10|short)   echo "----------" ;;
   20|medium)   echo "--------------------" ;;
@@ -477,7 +478,7 @@ parse_options() {
       echo "### USAGE"
       show_usage
       echo ""
-      echo "### SCRIPT AUTHORING TIPS"
+      echo "### EXAMPLES"
       show_tips
       safe_exit
     )
