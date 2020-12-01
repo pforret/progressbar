@@ -1,7 +1,7 @@
 ![GH stars](https://img.shields.io/github/stars/pforret/progressbar)
 ![GH tag](https://img.shields.io/github/v/tag/pforret/progressbar)
 ![Shellcheck CI](https://github.com/pforret/progressbar/workflows/Shellcheck%20CI/badge.svg)
-![Bash CI](https://github.com/pforret/progressbar/workflows/Bash%20CI/badge.svg)
+![bash_unit CI](https://github.com/pforret/progressbar/workflows/bash_unit%20CI/badge.svg)
 ![GH Language](https://img.shields.io/github/languages/top/pforret/progressbar)
 ![GH License](https://img.shields.io/github/license/pforret/progressbar)
 [![basher install](https://img.shields.io/badge/basher-install-white?logo=gnu-bash&style=flat)](https://basher.gitparade.com/package/)
