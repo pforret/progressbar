@@ -145,13 +145,14 @@ showbar_lines(){
     fflush();
   }
   END {
+    seconds=systime()-started_at;
     if(percent > 99){
       printf("\r[%s] %d%% / %d secs      " , full100 , 100, seconds);
     }
     printf("\n");
     if(length(cache)>3){
       print "lines:" , NR > cache
-      print "seconds:" , systime()-started_at >> cache
+      print "seconds:" , seconds >> cache
     }
   }
   '
