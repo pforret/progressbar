@@ -1,0 +1,249 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: zsh -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /Users/pforret/Code/github/progressbar/terminalizer
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 128
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 20
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 1000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: Terminalizer
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 12
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 20
+    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 500
+    content: >-
+      # use "progressbar seconds" when you know the # seconds an operation will
+      +- take
+  - delay: 500
+    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 2000
+    content: ./operation_that_takes_10_seconds.sh | ../progressbar seconds 10
+  - delay: 500
+    content: "\r\n"
+  - delay: 500
+    content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
+  - delay: 1008
+    content: "[##########1---------2---------3---------4---------5---------6---------7---------8---------9---------] 10% / 1 secs … \r"
+  - delay: 1012
+    content: "[####################2---------3---------4---------5---------6---------7---------8---------9---------] 20% / 2 secs … \r"
+  - delay: 1008
+    content: "[##############################3---------4---------5---------6---------7---------8---------9---------] 30% / 3 secs … \r"
+  - delay: 1012
+    content: "[########################################4---------5---------6---------7---------8---------9---------] 40% / 4 secs … \r"
+  - delay: 1010
+    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
+  - delay: 1013
+    content: "[############################################################6---------7---------8---------9---------] 60% / 6 secs … \r"
+  - delay: 1007
+    content: "[######################################################################7---------8---------9---------] 70% / 7 secs … \r"
+  - delay: 1007
+    content: "[################################################################################8---------9---------] 80% / 8 secs … \r"
+  - delay: 1009
+    content: "[##########################################################################################9---------] 90% / 9 secs … \r"
+  - delay: 1009
+    content: "[####################################################################################################] 100% / 10 secs … \r\r\n"
+  - delay: 8
+    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 7081
+    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 518
+    content: "# use \"progressbar lines\" when you know the # lines an operation will +- output\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 8727
+    content: ./operation_that_takes_10_seconds.sh | ../progressbar lines 12
+  - delay: 499
+    content: "\r\n"
+  - delay: 213
+    content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
+  - delay: 1012
+    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9--------] 8% / 1 secs … \r[################----2---------3---------4---------5---------6---------7---------8---------9--------] 16% / 1 secs … \r"
+  - delay: 1008
+    content: "[#########################-----3---------4---------5---------6---------7---------8---------9---------] 25% / 2 secs … \r"
+  - delay: 1012
+    content: "[#################################-------4---------5---------6---------7---------8---------9--------] 33% / 3 secs … \r"
+  - delay: 1011
+    content: "[#########################################---------5---------6---------7---------8---------9--------] 41% / 4 secs … \r"
+  - delay: 1007
+    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
+  - delay: 1010
+    content: "[##########################################################--6---------7---------8---------9--------] 58% / 6 secs … \r"
+  - delay: 1010
+    content: "[##################################################################----7---------8---------9--------] 66% / 7 secs … \r"
+  - delay: 1008
+    content: "[###########################################################################-----8---------9---------] 75% / 8 secs … \r"
+  - delay: 1006
+    content: "[###################################################################################-------9--------] 83% / 9 secs … \r"
+  - delay: 1007
+    content: "[###########################################################################################--------] 91% / 10 secs … \r[####################################################################################################] 100% / 10 secs … \r"
+  - delay: 5
+    content: "\r\n"
+  - delay: 6
+    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 5887
+    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 401
+    content: "# or just let progressbar learn these numbers by itself, by giving it an id for this operation\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 5704
+    content: >-
+      ./operation_that_takes_10_seconds.sh | ../progressbar lines
+      time-it-yourself
+  - delay: 491
+    content: "\r\n"
+  - delay: 1218
+    content: "1 lines / 1 secs … \r2 lines / 1 secs … \r"
+  - delay: 1007
+    content: "3 lines / 2 secs … \r"
+  - delay: 1010
+    content: "4 lines / 3 secs … \r"
+  - delay: 1007
+    content: "5 lines / 4 secs … \r"
+  - delay: 1009
+    content: "6 lines / 5 secs … \r"
+  - delay: 1009
+    content: "7 lines / 6 secs … \r"
+  - delay: 1013
+    content: "8 lines / 7 secs … \r"
+  - delay: 1004
+    content: "9 lines / 8 secs … \r"
+  - delay: 1011
+    content: "10 lines / 9 secs … \r"
+  - delay: 1012
+    content: "11 lines / 10 secs … \r12 lines / 10 secs … \r"
+  - delay: 6
+    content: "\r\n"
+  - delay: 8
+    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 4549
+    content: "# and then next time progressbar knows what to expect\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
+  - delay: 5759
+    content: >-
+      ./operation_that_takes_10_seconds.sh | ../progressbar lines
+      time-it-yourself
+  - delay: 949
+    content: "\r\n"
+  - delay: 244
+    content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
+  - delay: 984
+    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9--------] 8% / 1 secs … \r[################----2---------3---------4---------5---------6---------7---------8---------9--------] 16% / 1 secs … \r"
+  - delay: 1007
+    content: "[#########################-----3---------4---------5---------6---------7---------8---------9---------] 25% / 2 secs … \r"
+  - delay: 1010
+    content: "[#################################-------4---------5---------6---------7---------8---------9--------] 33% / 3 secs … \r"
+  - delay: 1008
+    content: "[#########################################---------5---------6---------7---------8---------9--------] 41% / 4 secs … \r"
+  - delay: 1008
+    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
+  - delay: 1007
+    content: "[##########################################################--6---------7---------8---------9--------] 58% / 6 secs … \r"
+  - delay: 1013
+    content: "[##################################################################----7---------8---------9--------] 66% / 7 secs … \r"
+  - delay: 1009
+    content: "[###########################################################################-----8---------9---------] 75% / 8 secs … \r"
+  - delay: 1007
+    content: "[###################################################################################-------9--------] 83% / 9 secs … \r"
+  - delay: 1009
+    content: "[###########################################################################################--------] 91% / 10 secs … \r[####################################################################################################] 100% / 10 secs … \r"
+  - delay: 6
+    content: "\r\n"

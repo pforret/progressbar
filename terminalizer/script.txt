@@ -1,8 +1,14 @@
 $ terminalizer record progressbar_usage
 
-$ # let's use ping as an example of an operation that take
-$ # pinging typically takes +- the same # of seconds as the # of pings
 
-$ ping -c 3 www.google.com
+# use "progressbar seconds" when you know the # seconds an operation will +- take
+$  ./operation_that_takes_10_seconds.sh | ../progressbar seconds 10
 
-$  ./operation_that_takes_10_seconds.sh | ../progressbar lines just-learn-it
+# use "progressbar lines" when you know the # lines an operation will +- output
+$  ./operation_that_takes_10_seconds.sh | ../progressbar lines 12
+
+# or just let progressbar learn these numbers by itself, by giving it an id for this operation
+$  ./operation_that_takes_10_seconds.sh | ../progressbar lines time-it-yourself
+
+# and then next time progressbar knows what to expect
+$  ./operation_that_takes_10_seconds.sh | ../progressbar lines time-it-yourself
