@@ -10,5 +10,13 @@ test_should_show_option_verbose() {
 
 test_simple_seconds_progress() {
   # simple progressbar for 3 seconds
-  assert_equals 1 $("$root_script" seconds 2 | grep -c "secs")
+  assert_equals 3 $("$root_script" seconds 2 | grep -c "secs")
+}
+
+test_memorisation() {
+  # simple progressbar for 3 seconds
+  uniq="test.$$"
+  "$root_script" seconds 3 | "$root_script" -q lines "$uniq"
+  assert_equals 5 "$("$root_script" check "$uniq" | grep "lines:" | gawk -F: '{print $2+0}')"
+  assert_equals 6 "$("$root_script" seconds 3 | "$root_script" lines "$uniq" | grep -c "secs")"
 }

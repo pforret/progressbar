@@ -17,7 +17,8 @@ option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
 #option|i|infile|file with source data (to calculate MB/s)|
 #option|o|outfile|file with generated data (to calculate MB/s)|
 option|b|bar|format of bar: normal/half/long/short|normal
-param|1|action|lines/seconds
+option|c|char|character to use a filler|#
+param|1|action|lines/seconds/clear/check
 param|1|input|input number or operation identifier
 " | grep -v '^#'
 }
@@ -34,8 +35,22 @@ main() {
     # add programs that need to be installed, like: tar, wget, ffmpeg, rsync, convert, curl ...
     require_binaries tput uname gawk
 
+    if [[ ${piped:-0} -gt 0 ]] ; then
+      eol="\n"
+    else
+      eol="\r"
+    fi
     action=$(lower_case "$action")
-    case $action in
+     if is_number "$input" ; then
+      # $1 is # lines/seconds expected
+      cache_file=""
+    else
+      # $1 is process identifier
+      # shellcheck disable=SC2154
+      cache_file="$tmp_dir/$(echo "$input" | hash 12).result.txt"
+      log "Cache file = [$cache_file]"
+    fi
+   case $action in
     lines )
 #TIP: use «progressbar lines <nb_lines>» to show the progress bar when you can estimate the number of lines that will be sent to stdin
 #TIP:> progressbar lines 14550
@@ -45,12 +60,40 @@ main() {
         progress_lines "$input"
         ;;
 
-    seconds )
+    seconds|time )
 #TIP: use «progressbar seconds <nb_secs>» to show the progress bar when you can estimate the number of seconds it will typically take
 #TIP:> if ! confirm "Delete file"; then ; echo "skip deletion" ;   fi
 #TIP: use «progressbar seconds <process_identifier>» to show the progress bar based on the number of seconds it took before
 #TIP:> progressbar seconds export-of-all-dbs
         progress_seconds "$input"
+        ;;
+
+    clear|erase )
+#TIP: use «progressbar clear <process_identifier>» to clear the cached results of a process
+#TIP:> progressbar clear export-of-all-dbs
+     if is_number "$input" ; then
+       alert "[$script_basename $action] only makes sense if [$input] is not a numeric parameter"
+     else
+       if [[ -f "$cache_file" ]] ; then
+         log "clear cache file [$cache_file]"
+         rm "$cache_file"
+       fi
+     fi
+        ;;
+
+    check|stats|show )
+#TIP: use «progressbar check <process_identifier>» to show the cached results of a process
+#TIP:> progressbar check export-of-all-dbs
+     if is_number "$input" ; then
+       alert "[$script_basename $action] only makes sense if [$input] is not a numeric parameter"
+     else
+       if [[ -f "$cache_file" ]] ; then
+         out "The last time [$input] was measured the following stats were collected:"
+         cat "$cache_file"
+       else
+         alert "No data cached for [$input]"
+       fi
+     fi
         ;;
 
     *)
@@ -66,18 +109,19 @@ bar_format(){
   # shellcheck disable=SC2154
   case $bar in
   none)   echo "" ;;
-  50|half)   echo "0----1----2----3----4----5----6----7----8----9----!" ;;
   10|short)   echo "----------" ;;
   20|medium)   echo "--------------------" ;;
+  50|half)   echo "0----1----2----3----4----5----6----7----8----9----!" ;;
+  100|normal) echo "0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------" ;;
   200|double) echo "0-------------------1-------------------2-------------------3-------------------4-------------------5-------------------6------------------7-------------------8-------------------9-------------------!" ;;
-  *) echo "0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!"
+  *) echo "0----1----2----3----4----5----6----7----8----9----!"
   esac
 }
 
 progress_lines(){
   if is_number "$1" ; then
     # $1 is # lines input expected
-    showbar_lines "$1"
+    print_bar_lines "$1"
   else
     # $1 is process identifier
     # shellcheck disable=SC2154
@@ -89,9 +133,9 @@ progress_lines(){
     else
       # take # lines of previous time
       lines=$(grep 'lines:' "$cache_file" | cut -d: -f2)
-      log "Found: $lines lines"
+      log "Found in cache: $lines lines"
       [[ -z "$lines" ]] && lines=100
-      showbar_lines "$lines" "$cache_file"
+      print_bar_lines "$lines" "$cache_file"
     fi
   fi
 }
@@ -99,7 +143,7 @@ progress_lines(){
 progress_seconds(){
   if is_number "$1" ; then
     # $1 is # lines input expected
-    showbar_seconds "$1"
+    print_bar_seconds "$1"
   else
     # $1 is process identifier
     cache_file="$tmp_dir/$(echo "$1" | hash 12).result.txt"
@@ -110,46 +154,50 @@ progress_seconds(){
     else
       # take # seconds of previous time
       lines=$(grep 'seconds:' "$cache_file" | cut -d: -f2)
-      log "Found: $lines seconds"
+      log "Found in cache: $lines seconds"
       [[ -z "$lines" ]] && lines=100
-      showbar_seconds "$lines" "$cache_file"
+      print_bar_seconds "$lines" "$cache_file"
     fi
   fi
 }
 
-showbar_lines(){
+print_bar(){
   lines="$1"
   cache=${2:-}
-  update_every=$(( lines / 250))
-  [[ $update_every -lt 1 ]] && update_every=1
-  [[ $update_every -gt 1000 ]] && update_every=1000
-  log "showbar lines: expect $lines lines"
-  log "showbar lines: every $update_every lines"
+  update_every=${3:-1}
   gawk \
     -v full100="$(bar_format)" \
     -v cache="$cache" \
     -v expected_lines="$lines" \
+    -v eol="$eol" \
+    -v char="$char" \
+    -v quiet="$quiet" \
     -v update_every="$update_every" '
+  function repeat(char,count) {
+        var =""
+        while (count-->0) var = var char;
+        return var;
+  }
   BEGIN {
     len100=length(full100);
+    fin100=substr(repeat(char,len100),1,len100);
     started_at=systime();
+    if(quiet < 1) printf("[%s] %d%% / %d secs … %s" , full100 , 0, 0, eol);
   }
   (NR % update_every) == 0 {
     percent=100*NR/expected_lines;
     width=len100*NR/expected_lines;
     if(width>len100){width=len100};
     if(width<1){width=1};
+    keep=len100-width;
     seconds=systime()-started_at;
-    partial=substr(full100,1,width);
-    printf("\r[%s] %d%% / %d secs … " , partial , percent, seconds);
+    partial=substr(fin100,1,width) substr(full100,width+1,keep) ;
+    if(quiet < 1) printf("[%s] %d%% / %d secs … %s" , partial , percent, seconds, eol);
     fflush();
   }
   END {
+    if(quiet < 1) printf("\n");
     seconds=systime()-started_at;
-    if(percent > 99){
-      printf("\r[%s] %d%% / %d secs      " , full100 , 100, seconds);
-    }
-    printf("\n");
     if(length(cache)>3){
       print "lines:" , NR > cache
       print "seconds:" , seconds >> cache
@@ -158,45 +206,31 @@ showbar_lines(){
   '
 }
 
-showbar_seconds(){
+print_bar_lines(){
+  lines="$1"
+  cache=${2:-}
+  update_every=$(( lines / 250))
+  [[ $update_every -lt 1 ]] && update_every=1
+  [[ $update_every -gt 1000 ]] && update_every=1000
+  log "showbar lines: expect $lines line(s)"
+  log "showbar lines: update every $update_every line(s)"
+  print_bar "$lines" "$cache" "$update_every"
+}
+
+print_bar_seconds(){
   seconds="$1"
   cache=${2:-}
+  log "showbar seconds: expect $seconds seconds"
   seq 1 "$seconds" \
-  | gawk '{print ; system("sleep 1");}' \
-  | gawk \
-    -v full100="$(bar_format)" \
-    -v cache="$cache" \
-    -v expected_lines="$seconds" '
-  BEGIN {
-    len100=length(full100);
-    started_at=systime();
-  }
-  {
-    percent=100*NR/expected_lines;
-    width=len100*NR/expected_lines;
-    if(width>len100){width=len100};
-    if(width<1){width=1};
-    seconds=systime()-started_at;
-    partial=substr(full100,1,width);
-    printf("\r[%s] %d%% / %d secs … " , partial , percent, seconds);
-    fflush();
-  }
-  END {
-    if(percent > 99){
-      printf("\r[%s] %d%% / %d secs      " , full100 , 100, seconds);
-    }
-    printf("\n");
-    if(length(cache)>3){
-      print "lines:" , NR > cache
-      print "seconds:" , systime()-started_at >> cache
-    }
-  }
-  '
+  | gawk '{system("sleep 1"); print;}' \
+  | print_bar "$seconds" "$cache" 1
 }
 
 showbar_unknown(){
   cache=${1:-}
   gawk \
+    -v quiet="$quiet" \
+    -v eol="$eol" \
     -v cache="$cache" '
   BEGIN {
     len100=length(full100);
@@ -204,11 +238,11 @@ showbar_unknown(){
   }
   {
     seconds=systime()-started_at;
-    printf("\r%d lines / %d secs … " , NR, seconds);
+    if(quiet < 1) printf("%d lines / %d secs … %s" , NR, seconds,eol);
     fflush();
   }
   END {
-    printf("\n");
+    if(quiet < 1) printf("\n");
     if(length(cache)>3){
       print "lines:" , NR > cache
       print "seconds:" , systime()-started_at >> cache
@@ -581,7 +615,7 @@ prep_log_and_temp_dir(){
     folder_prep "$log_dir" 30
     log_file=$log_dir/$script_prefix.$execution_day.log
     log "log_file: $log_file"
-    echo "$(date '+%H:%M:%S') | [$script_basename] $script_version started" >> "$log_file"
+    # echo "$(date '+%H:%M:%S') | [$script_basename] $script_version started" >> "$log_file"
   fi
 }
 
