@@ -41,6 +41,7 @@ main() {
       eol="\r"
     fi
     action=$(lower_case "$action")
+     # shellcheck disable=SC2154
      if is_number "$input" ; then
       # $1 is # lines/seconds expected
       cache_file=""
@@ -165,6 +166,7 @@ print_bar(){
   lines="$1"
   cache=${2:-}
   update_every=${3:-1}
+    # shellcheck disable=SC2154
   gawk \
     -v full100="$(bar_format)" \
     -v cache="$cache" \
