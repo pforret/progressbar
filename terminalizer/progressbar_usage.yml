@@ -5,7 +5,7 @@ config:
   # like `/bin/bash -l`, `ls`, or any other commands
   # the default is bash for Linux
   # or powershell.exe for Windows
-  command: zsh -l
+  command: bash -l
   
   # Specify the current working directory path
   # the default is the current working directory path
@@ -18,12 +18,12 @@ config:
   # Explicitly set the number of columns
   # or use `auto` to take the current
   # number of columns of your shell
-  cols: 128
+  cols: 120
   
   # Explicitly set the number of rows
   # or use `auto` to take the current
   # number of rows of your shell
-  rows: 20
+  rows: 25
   
   # Amount of times to repeat GIF
   # If value is -1, play once
@@ -90,7 +90,7 @@ config:
   # Theme
   theme:
     background: "transparent"
-    foreground: "#afafaf"
+    foreground: "#ffffff"
     cursor: "#c7c7c7"
     black: "#232628"
     red: "#fc4384"
@@ -111,139 +111,141 @@ config:
   
 # Records, feel free to edit them
 records:
-  - delay: 20
-    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
   - delay: 500
-    content: >-
-      # use "progressbar seconds" when you know the # seconds an operation will
-      +- take
+    content: "👉  use 'progressbar seconds <nn>' when you know +- the # seconds an operation will take\r\n"
   - delay: 500
-    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 2000
-    content: ./operation_that_takes_10_seconds.sh | ../progressbar seconds 10
+    content: "💻 > "
+  - delay: 500
+    content: operation_that_takes_10_seconds.sh | progressbar seconds 10
   - delay: 500
     content: "\r\n"
-  - delay: 500
+  - delay: 174
     content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
-  - delay: 1008
+  - delay: 1006
     content: "[##########1---------2---------3---------4---------5---------6---------7---------8---------9---------] 10% / 1 secs … \r"
-  - delay: 1012
+  - delay: 1007
     content: "[####################2---------3---------4---------5---------6---------7---------8---------9---------] 20% / 2 secs … \r"
-  - delay: 1008
+  - delay: 1007
     content: "[##############################3---------4---------5---------6---------7---------8---------9---------] 30% / 3 secs … \r"
   - delay: 1012
     content: "[########################################4---------5---------6---------7---------8---------9---------] 40% / 4 secs … \r"
-  - delay: 1010
-    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
-  - delay: 1013
-    content: "[############################################################6---------7---------8---------9---------] 60% / 6 secs … \r"
-  - delay: 1007
-    content: "[######################################################################7---------8---------9---------] 70% / 7 secs … \r"
-  - delay: 1007
-    content: "[################################################################################8---------9---------] 80% / 8 secs … \r"
-  - delay: 1009
-    content: "[##########################################################################################9---------] 90% / 9 secs … \r"
-  - delay: 1009
-    content: "[####################################################################################################] 100% / 10 secs … \r\r\n"
-  - delay: 8
-    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 7081
-    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 518
-    content: "# use \"progressbar lines\" when you know the # lines an operation will +- output\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 8727
-    content: ./operation_that_takes_10_seconds.sh | ../progressbar lines 12
-  - delay: 499
-    content: "\r\n"
-  - delay: 213
-    content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
-  - delay: 1012
-    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9--------] 8% / 1 secs … \r[################----2---------3---------4---------5---------6---------7---------8---------9--------] 16% / 1 secs … \r"
-  - delay: 1008
-    content: "[#########################-----3---------4---------5---------6---------7---------8---------9---------] 25% / 2 secs … \r"
-  - delay: 1012
-    content: "[#################################-------4---------5---------6---------7---------8---------9--------] 33% / 3 secs … \r"
-  - delay: 1011
-    content: "[#########################################---------5---------6---------7---------8---------9--------] 41% / 4 secs … \r"
-  - delay: 1007
-    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
-  - delay: 1010
-    content: "[##########################################################--6---------7---------8---------9--------] 58% / 6 secs … \r"
-  - delay: 1010
-    content: "[##################################################################----7---------8---------9--------] 66% / 7 secs … \r"
-  - delay: 1008
-    content: "[###########################################################################-----8---------9---------] 75% / 8 secs … \r"
   - delay: 1006
-    content: "[###################################################################################-------9--------] 83% / 9 secs … \r"
+    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
   - delay: 1007
-    content: "[###########################################################################################--------] 91% / 10 secs … \r[####################################################################################################] 100% / 10 secs … \r"
+    content: "[############################################################6---------7---------8---------9---------] 60% / 6 secs … \r"
+  - delay: 1009
+    content: "[######################################################################7---------8---------9---------] 70% / 7 secs … \r"
+  - delay: 1009
+    content: "[################################################################################8---------9---------] 80% / 8 secs … \r"
+  - delay: 1006
+    content: "[##########################################################################################9---------] 90% / 9 secs … \r"
+  - delay: 1008
+    content: "[####################################################################################################] 100% / 10 secs   \r\r\n"
   - delay: 5
     content: "\r\n"
-  - delay: 6
-    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 5887
-    content: "\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 401
-    content: "# or just let progressbar learn these numbers by itself, by giving it an id for this operation\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 5704
-    content: >-
-      ./operation_that_takes_10_seconds.sh | ../progressbar lines
-      time-it-yourself
-  - delay: 491
+  - delay: 1000
+    content: "👉  use 'progressbar lines <nn>' when you +- know the # lines an operation will output\r\n"
+  - delay: 505
+    content: "💻 > "
+  - delay: 4693
+    content: operation_that_takes_10_seconds.sh | progressbar lines 12
+  - delay: 370
     content: "\r\n"
-  - delay: 1218
-    content: "1 lines / 1 secs … \r2 lines / 1 secs … \r"
-  - delay: 1007
-    content: "3 lines / 2 secs … \r"
-  - delay: 1010
-    content: "4 lines / 3 secs … \r"
-  - delay: 1007
-    content: "5 lines / 4 secs … \r"
-  - delay: 1009
-    content: "6 lines / 5 secs … \r"
-  - delay: 1009
-    content: "7 lines / 6 secs … \r"
-  - delay: 1013
-    content: "8 lines / 7 secs … \r"
-  - delay: 1004
-    content: "9 lines / 8 secs … \r"
-  - delay: 1011
-    content: "10 lines / 9 secs … \r"
-  - delay: 1012
-    content: "11 lines / 10 secs … \r12 lines / 10 secs … \r"
-  - delay: 6
-    content: "\r\n"
-  - delay: 8
-    content: "\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 4549
-    content: "# and then next time progressbar knows what to expect\r\n\e]7;file://MacPedro.forret/Users/pforret/Code/github/progressbar/terminalizer\aMacPedro:terminalizer pforret$ "
-  - delay: 5759
-    content: >-
-      ./operation_that_takes_10_seconds.sh | ../progressbar lines
-      time-it-yourself
-  - delay: 949
-    content: "\r\n"
-  - delay: 244
+  - delay: 183
     content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
-  - delay: 984
-    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9--------] 8% / 1 secs … \r[################----2---------3---------4---------5---------6---------7---------8---------9--------] 16% / 1 secs … \r"
-  - delay: 1007
+  - delay: 1000
+    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9---------] 8% / 1 secs … \r"
+  - delay: 1000
+    content: "[################----2---------3---------4---------5---------6---------7---------8---------9---------] 16% / 1 secs … \r"
+  - delay: 1000
+    content: "[#########################-----3---------4---------5---------6---------7---------8---------9---------] 25% / 2 secs … \r"
+  - delay: 1000
+    content: "[#################################-------4---------5---------6---------7---------8---------9---------] 33% / 3 secs … \r"
+  - delay: 1000
+    content: "[#########################################---------5---------6---------7---------8---------9---------] 41% / 4 secs … \r"
+  - delay: 1000
+    content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
+  - delay: 1000
+    content: "[##########################################################--6---------7---------8---------9---------] 58% / 6 secs … \r"
+  - delay: 1000
+    content: "[##################################################################----7---------8---------9---------] 66% / 7 secs … \r"
+  - delay: 1000
+    content: "[###########################################################################-----8---------9---------] 75% / 8 secs … \r"
+  - delay: 1000
+    content: "[###################################################################################-------9---------] 83% / 9 secs … \r"
+  - delay: 1000
+    content: "[###########################################################################################---------] 91% / 10 secs … \r"
+  - delay: 1000
+    content: "[####################################################################################################] 100% / 10 secs … \r"
+  - delay: 6
+    content: "\r\n"
+  - delay: 6
+    content: "\r\n"
+  - delay: 1000
+    content: "👉  or just let progressbar learn these numbers by itself, by giving it an id for this operation"
+  - delay: 500
+    content: "\r\n💻 > "
+  - delay: 1815
+    content: "operation_that_takes_10_seconds.sh | progressbar lines time-it-yourself"
+  - delay: 124
+    content: "\r\n"
+  - delay: 1000
+    content: "1 lines / 1 secs … \r"
+  - delay: 1000
+    content: "2 lines / 1 secs … \r"
+  - delay: 1000
+    content: "3 lines / 2 secs … \r"
+  - delay: 1000
+    content: "4 lines / 3 secs … \r"
+  - delay: 1000
+    content: "5 lines / 4 secs … \r"
+  - delay: 1000
+    content: "6 lines / 5 secs … \r"
+  - delay: 1000
+    content: "7 lines / 6 secs … \r"
+  - delay: 1000
+    content: "8 lines / 7 secs … \r"
+  - delay: 1000
+    content: "9 lines / 8 secs … \r"
+  - delay: 1000
+    content: "10 lines / 9 secs … \r"
+  - delay: 1000
+    content: "11 lines / 10 secs … \r"
+  - delay: 1000
+    content: "12 lines / 10 secs   \r\n"
+  - delay: 5780
+    content: "👉  and then next time progressbar knows what to expect"
+  - delay: 448
+    content: "\r\n💻 > "
+  - delay: 6947
+    content: "operation_that_takes_10_seconds.sh | progressbar lines time-it-yourself"
+  - delay: 421
+    content: "\r\n"
+  - delay: 202
+    content: "[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------] 0% / 0 secs … \r"
+  - delay: 1000
+    content: "[########--1---------2---------3---------4---------5---------6---------7---------8---------9---------] 8% / 1 secs … \r"
+  - delay: 1000
+    content: "[################----2---------3---------4---------5---------6---------7---------8---------9---------] 16% / 1 secs … \r"
+  - delay: 1009
     content: "[#########################-----3---------4---------5---------6---------7---------8---------9---------] 25% / 2 secs … \r"
   - delay: 1010
-    content: "[#################################-------4---------5---------6---------7---------8---------9--------] 33% / 3 secs … \r"
-  - delay: 1008
-    content: "[#########################################---------5---------6---------7---------8---------9--------] 41% / 4 secs … \r"
-  - delay: 1008
+    content: "[#################################-------4---------5---------6---------7---------8---------9---------] 33% / 3 secs … \r"
+  - delay: 1012
+    content: "[#########################################---------5---------6---------7---------8---------9---------] 41% / 4 secs … \r"
+  - delay: 1011
     content: "[##################################################5---------6---------7---------8---------9---------] 50% / 5 secs … \r"
-  - delay: 1007
-    content: "[##########################################################--6---------7---------8---------9--------] 58% / 6 secs … \r"
-  - delay: 1013
-    content: "[##################################################################----7---------8---------9--------] 66% / 7 secs … \r"
+  - delay: 1008
+    content: "[##########################################################--6---------7---------8---------9---------] 58% / 6 secs … \r"
+  - delay: 1006
+    content: "[##################################################################----7---------8---------9---------] 66% / 7 secs … \r"
   - delay: 1009
     content: "[###########################################################################-----8---------9---------] 75% / 8 secs … \r"
-  - delay: 1007
-    content: "[###################################################################################-------9--------] 83% / 9 secs … \r"
-  - delay: 1009
-    content: "[###########################################################################################--------] 91% / 10 secs … \r[####################################################################################################] 100% / 10 secs … \r"
-  - delay: 6
-    content: "\r\n"
+  - delay: 1013
+    content: "[###################################################################################-------9---------] 83% / 9 secs … \r"
+  - delay: 1013
+    content: "[###########################################################################################---------] 91% / 10 secs … \r"
+  - delay: 1000
+    content: "[####################################################################################################] 100% / 10 secs … \r"
+  - delay: 1000
+    content: " "

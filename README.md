@@ -46,7 +46,7 @@ $ sudo ln -s $(pwd)/progressbar /usr/local/bin/ # or someone else in your path
                 
 ## Examples
 
-![Demo](terminalizer/render1607111748115.gif)
+![Demo](terminalizer/progressbar.gif)
 
 ### Simple use: # lines or seconds is known
 ```bash
