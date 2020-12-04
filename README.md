@@ -11,7 +11,9 @@
 
 ![test](progressbar.jpg)
 
-Show a CLI progress bar for long running scripts
+Show a CLI progress bar for long-running programs, like rsync, ffmpeg, tar, zip, wget, ... or your own script
+
+**Add a progressbar to _anything_**
 
 ## Installation
 

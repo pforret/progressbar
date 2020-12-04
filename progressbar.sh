@@ -2,7 +2,7 @@
 ### Created by Peter Forret ( pforret ) on 2020-12-01
 script_version="0.0.0"  # if there is a VERSION.md in this script's folder, it will take priority for version number
 readonly script_author="peter@forret.com"
-readonly script_creation="2020-12-01"
+readonly script_created="2020-12-01"
 readonly run_as_root=-1 # run_as_root: 0 = don't check anything / 1 = script MUST run as root / -1 = script MAY NOT run as root
 
 list_options() {
@@ -29,8 +29,8 @@ param|1|input|input number or operation identifier
 
 main() {
     log "Program: $script_basename $script_version"
-    log "Created: $script_creation"
-    log "Updated: $prog_modified"
+    log "Created: $script_created"
+    log "Updated: $script_modified"
     log "Run as : $USER@$HOSTNAME"
     # add programs that need to be installed, like: tar, wget, ffmpeg, rsync, convert, curl ...
     require_binaries tput uname gawk
@@ -273,10 +273,8 @@ hash(){
   fi
 }
 
-prog_modified="??"
+script_modified="??"
 os_name=$(uname -s)
-[[ "$os_name" = "Linux" ]]  && prog_modified=$(stat -c %y    "${BASH_SOURCE[0]}" 2>/dev/null | cut -c1-16) # generic linux
-[[ "$os_name" = "Darwin" ]] && prog_modified=$(stat -f "%Sm" "${BASH_SOURCE[0]}" 2>/dev/null) # for MacOS
 
 force=0
 help=0
@@ -369,7 +367,7 @@ is_number(){ local re='^[0-9]+$'; [[ "$1" =~ $re ]] ; }
 
 show_usage() {
   out "Program: ${col_grn}$script_basename $script_version${col_reset} by ${col_ylw}$script_author${col_reset}"
-  out "Updated: ${col_grn}$prog_modified${col_reset}"
+  out "Updated: ${col_grn}$script_modified${col_reset}"
 
   echo -n "Usage: $script_basename"
    list_options \
@@ -590,6 +588,9 @@ lookup_script_data(){
     script_install_path="$(readlink "$script_install_path")"
     [[ "$script_install_path" != /* ]] && script_install_path="$script_install_folder/$script_install_path"
   done
+  script_modified="?"
+  [[ "$os_name" = "Linux" ]]  && script_modified=$(stat -c %y    "$script_install_path" 2>/dev/null | cut -c1-16) # generic linux
+  [[ "$os_name" = "Darwin" ]] && script_modified=$(stat -f "%Sm" "$script_install_path" 2>/dev/null) # for MacOS
 
   log "Executing : [$script_install_path]"
   log "In folder : [$script_install_folder]"
