@@ -19,7 +19,7 @@ exec 1>&2
 
 root_folder=$(git rev-parse --show-toplevel)
 
-tests/bash_unit tests/*.sh || exit 1
+tests/bash_unit tests/*.sh
 
-shellcheck "$root_folder"/*.sh || exit 1
+shellcheck "$root_folder"/*.sh
 
