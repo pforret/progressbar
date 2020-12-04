@@ -21,14 +21,17 @@ with [basher](https://github.com/basherpm/basher)
 
 or with `git`
 
-	$ git clone https://github.com/pforret/progressbar.git
-	$ cd progressbar
+```bash
+$ git clone https://github.com/pforret/progressbar.git
+$ cd progressbar
+$ sudo ln -s $(pwd)/progressbar /usr/local/bin/ # or someone else in your path
+```
 
 ## Usage
 
-    Program: progressbar 1.0.0 by peter@forret.com
+    Program: progressbar 1.1.0 by peter@forret.com
     Updated: Dec  1 14:39:22 2020
-    Usage: progressbar [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] [-b <bar>] <action> <input>
+    Usage: progressbar [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] [-b <bar>] [-c <char>] <action> <input>
     Flags, options and parameters:
         -h|--help      : [flag] show usage [default: off]
         -q|--quiet     : [flag] no output [default: off]
@@ -37,10 +40,13 @@ or with `git`
         -l|--log_dir <val>: [optn] folder for log files   [default: log]
         -t|--tmp_dir <val>: [optn] folder for temp files  [default: /tmp/progressbar]
         -b|--bar <val>: [optn] format of bar: normal/half/long/short  [default: normal]
-        <action>  : [parameter] lines/seconds
-        <input>   : [parameter] input number or operation identifier       
-            
+        -c|--char <val>: [optn] character to use a filler  [default: #]
+        <action>  : [parameter] lines/seconds/clear/check
+        <input>   : [parameter] input number or operation identifier     
+                
 ## Examples
+
+![Demo](terminalizer/render1607111748115.gif)
 
 ### Simple use: # lines or seconds is known
 ```bash
@@ -62,13 +68,23 @@ $ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
 
 # the following times, it can use this information to show a 0-100% progressbar
 $ ping -c 40 www.google.com | progressbar lines 40-pings-to-google
-[0---------1---------2---------3---------4---------5] 51% / 21 secs … 
-(...)
-[0---------1---------2---------3---------4---------5---------6---------7---------8---------9---------!] 100% / 39 secs     
+[############################--3---------4---------5---------6---------7---------8---------9--------] 28% / 11 secs … 
 
 # can also be used with different progress bar format (here: short)
 $ ping -c 40 www.google.com | progressbar -b short lines 40-pings-to-google
-[----------] 100% / 39 secs    
+[##-------] 28% / 11 secs … 
+
+# use '|' as character for 'done' time
+$ ping -c 40 www.google.com | progressbar -c '|' lines 40-pings-to-google
+[|||||||||||||||||||||||||||||||||||-----4---------5---------6---------7---------8---------9--------] 35% / 14 secs … 
+
+
+# for instance, to use it with rsync, first do a --dry-run (rather fast) to get the estimated # of lines
+$ rsync --dry-run -avz source/ destination/ | progressbar lines long-rsync-operation
+
+# and then run the actual operation, which will take much longer, but will output +- the same # of lines
+$ rsync -avz source/ destination/ | progressbar lines long-rsync-operation
+
 ```
    
     
